@@ -20,11 +20,13 @@
                 <span class="sr-only"style="color: aliceblue;">(current)</span></a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#"style="color: aliceblue;">Cart</a>
+              <a class="nav-link" href="/cart"style="color: aliceblue;">Cart</a>
             </li>
+            {{#if user}}
             <li class="nav-item">
               <a class="nav-link" href="#"style="color: aliceblue;">Orders</a>
             </li>
+            {{/if}}
             </ul>
             <ul class="navbar-nav ml-auto">
             <li class="nav-item dropdown">
