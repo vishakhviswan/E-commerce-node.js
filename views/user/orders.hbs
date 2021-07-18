@@ -1,0 +1,40 @@
+<section>
+    <div class="container">
+        <div class="row mt-4">
+            <a href="/" class="btn btn-success ml-auto">Add Product</a>
+        </div>
+        <table class="table mt-5">
+  <thead>
+    <tr >
+      <th scope="col">Date</th>
+      <th scope="col">Address</th>
+      <th scope="col">Pincode</th>
+      <th scope="col">Mobile</th>
+      <th scope="col">Amount</th>
+      <th scope="col">Payment</th>
+      <th scope="col">Status</th>
+    </tr>
+  </thead>
+  <tbody>
+      
+    <tr>
+      <td>18-07-2021</td>
+      <td>Mayalayam</td>
+      <td>691014</td>
+      <td >9995976563</td>
+      <td>65000</td>
+
+      <td>COD</td>
+      <td>Placed</td>
+      <td>
+        <a href="/view-order-products" class="btn btn-danger" >View Products</a>
+        {{!-- Metod 1  (id passing)--}}
+        {{!-- <a href="/admin/delete-product?id={{this._id}}" class="btn btn-danger">Delete</a> --}}
+        
+        </td>
+    </tr>
+    
+  </tbody>
+</table>
+    </div>
+</section>
