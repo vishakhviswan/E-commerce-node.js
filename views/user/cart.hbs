@@ -5,26 +5,89 @@
                 <tr>
                     <th scope="col">Item</th>
                     <th scope="col">Title</th>
+                    <th scope="col">Price</th>
                     <th scope="col">Quantity</th>
+
                 </tr>
             </thead>
             <tbody>
                 {{#each products}}
                 <tr>
-                    {{#each this.product}}
-                    <td><img style="width: 70px;height: 70px;" src="/product-images/{{this._id}}.jpg" alt=""></td>
-                    <td>{{this.Title}}</td>
-                     {{/each}}
+                    <td><img style="width: 70px;height: 70px;" src="/product-images/{{this.product._id}}.jpg" alt="">
+                    </td>
+                    <td>{{this.product.Title}}</td>
+                    <td>Rs. {{this.product.Price}}</td>
+
                     <td>
-                        <button class="cart-item-count mr-3">-</button>{{this.quantity}}<button class="cart-item-count ml-3">+</button>
+                        <button class="cart-item-count mr-3"
+                            onclick="changeQuantity('{{this._id}}','{{this.product._id}}',-1)">-</button>
+                        <span id="{{this.product._id}}">{{this.quantity}}</span>
+                        <button class="cart-item-count ml-3"
+                            onclick="changeQuantity('{{this._id}}','{{this.product._id}}',1)">+</button>
                     </td>
                     <td>
-                        <a href="" class="btn btn-danger">Remove</a>
+                        <button class="btn btn-danger"
+                            onclick="removeProduct('{{this._id}}','{{this.product._id}}') ">Remove</button>
                     </td>
-                   
+
                 </tr>
                 {{/each}}
             </tbody>
         </table>
+        <hr>
+        <div class="float-right pr-5 pb-5">
+            <h4 class="float-right mr-5 pr-5">Total : Rs. {{total}} </h4><br>
+            <a href="/place-order" class="btn btn-success mt-3" style="width:100%;"><b>Place Order</b></a>
+        </div>
     </div>
 </section>>
+<script>
+    function changeQuantity(cartId, proId, count) {
+        let quantity = parseInt(document.getElementById(proId).innerHTML)
+        count = parseInt(count)
+
+        $.ajax({
+            url: '/change-product-quantity',
+            data: {
+                cart: cartId,
+                product: proId,
+                count: count,
+                quantity: quantity
+            },
+            method: 'post',
+            success: (response) => {
+                if (response.removeProduct) {
+                    alert("Product Removed from Cart")
+                    location.reload()
+                } else {
+                    document.getElementById(proId).innerHTML = quantity + count
+                }
+
+            }
+        })
+    }
+</script>
+<script>
+    function removeProduct(cartId, proId) {
+        let quantity = parseInt(document.getElementById(proId).innerHTML)
+
+        $.ajax({
+            url: '/remove-product',
+            data: {
+                cart: cartId,
+                product: proId
+            },
+            method: 'post',
+            success: (response) => {
+                if (response.removeProduct) {
+                    alert("Product Removed from Cart")
+                    location.reload()
+                } else {
+                    document.getElementById(proId).innerHTML = quantity + count
+                }
+
+            }
+        })
+    }
+
+</script>

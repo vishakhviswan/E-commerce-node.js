@@ -1,4 +1,5 @@
 const mongoClient = require('mongodb').MongoClient
+
 const mongodbOptions = {
     useNewUrlParser: true,
     useUnifiedTopology: true
@@ -6,6 +7,7 @@ const mongodbOptions = {
 const state={
     db:null
 }
+
 module.exports.connect=function(done){
     const url = 'mongodb://localhost:27017'
     const dbname='shopping'
