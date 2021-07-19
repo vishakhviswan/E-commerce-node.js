@@ -16,22 +16,23 @@
                 </div>
                 <div class="col-auto "> <small>Receipt Voucher : 1KAU9-84UIL</small> </div>
             </div>
+            {{#each products}}
             <div class="row">
                 <div class="col">
                     <div class="card card-2">
                         <div class="card-body">
                             <div class="media">
-                                <div class="sq align-self-center "> <img class="img-fluid my-auto align-self-center mr-2 mr-md-4 pl-0 p-0 m-0" src="https://i.imgur.com/RJOW4BL.jpg" width="135" height="135" /> </div>
+                                <div class="sq align-self-center "> <img class="img-fluid my-auto align-self-center mr-2 mr-md-4 pl-0 p-0 m-0" src="/product-images/{{this.product._id}}.jpg" width="135" height="135" /> </div>
                                 <div class="media-body my-auto text-right">
                                     <div class="row my-auto flex-column flex-md-row">
                                         <div class="col my-auto">
-                                            <h6 class="mb-0"> Jack Jacs</h6>
+                                            <h6 class="mb-0">{{this.product.Title}}</h6>
                                         </div>
-                                        <div class="col-auto my-auto"> <small>Golden Rim </small></div>
-                                        <div class="col my-auto"> <small>Size : M</small></div>
-                                        <div class="col my-auto"> <small>Qty : 1</small></div>
+                                        <div class="col-auto my-auto"> <small>{{this.product.Category}} </small></div>
+                                        <div class="col my-auto"> <small>{{this.product.Description}}</small></div>
+                                        <div class="col my-auto"> <small>{{this.quantity}}</small></div>
                                         <div class="col my-auto">
-                                            <h6 class="mb-0">&#8377;3,600.00</h6>
+                                            <h6 class="mb-0">&#8377;{{this.product.Price}}</h6>
                                         </div>
                                     </div>
                                 </div>
@@ -54,7 +55,8 @@
                     </div>
                 </div>
             </div>
-            <div class="row mt-4">
+            {{/each}}
+            {{!-- <div class="row mt-4">
                 <div class="col">
                     <div class="card card-2">
                         <div class="card-body">
@@ -93,7 +95,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> --}}
             <div class="row mt-4">
                 <div class="col">
                     <div class="row justify-content-between">
@@ -147,8 +149,9 @@
                     <div class="col-auto my-auto ">
                         <h2 class="mb-0 font-weight-bold">TOTAL PAID</h2>
                     </div>
+    
                     <div class="col-auto my-auto ml-auto">
-                        <h1 class="display-3 ">&#8377; 5,528</h1>
+                        <h1 class="display-3 ">&#8377; <span id="total">{{totalValue}}</span></h1>
                     </div>
                 </div>
                 <div class="row mb-3 mt-3 mt-md-0">

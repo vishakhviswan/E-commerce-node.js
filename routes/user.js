@@ -102,16 +102,20 @@ router.post('/place-order',async (req,res)=>{
   console.log(req.body);
 })
 
-router.get('/orders', (req, res) => {
-  res.render('user/orders')
+router.get('/orders',verifyLogin,async (req, res) => {
+  let orderDetails=await userHelpers.getOrders(req.session.user._id)
+  res.render('user/orders',{orderDetails,user:req.session.user})
 });
 
 router.get('/order-success', (req, res) => {
-  res.render('user/order-success')
+  
+  res.render('user/order-success',{user:req.session.user})
 });
 
-router.get('/view-order-products', (req, res) => {
-  res.render('user/view-order-products')
+router.get('/view-order-products/:id',verifyLogin, async(req, res)=>{
+   let products=await userHelpers.getOrderProducts(req.params.id)
+   let totalValue=await userHelpers.getTotalAmount(req.params.id)
+  res.render('user/view-order-products',{user:req.session.user,products,totalValue})
 });
 
 
