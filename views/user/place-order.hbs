@@ -1,48 +1,93 @@
 <section>
-<form action="" id="checkout-form">
-<div class="col-md-6" style=" align-items:center; width: 50%; float: left; margin-left: 25px; margin-top: 35px;">
+  <form action="" id="checkout-form">
+    <div class="col-md-6" style=" align-items:center; width: 50%; float: left; margin-left: 25px; margin-top: 35px;">
 
-<h2>Enter Delivery Details </h2>
+      <h2>Enter Delivery Details </h2>
 
-    <label for="">Address</label><br>
-    <input type="text" name="address" class="form-control"><br>
-    <label for="">Pincode</label><br>
-    <input type="number" name="pincode" class="form-control"><br>
-    <label for="">Mobile</label><br>
-    <input type="mobile" name="mobile" class="form-control"><br>
-    <input type="text" name="userId" id="" value="{{user._id}}" hidden>
+      <label for="">Address</label><br>
+      <input type="text" name="address" class="form-control"><br>
+      <label for="">Pincode</label><br>
+      <input type="number" name="pincode" class="form-control"><br>
+      <label for="">Mobile</label><br>
+      <input type="mobile" name="mobile" class="form-control"><br>
+      <input type="text" name="userId" id="" value="{{user._id}}" hidden>
 
-</div>
+    </div>
 
-<div class="card col-md-4" style="width: 375px; float:left; padding: 10px; margin-left: 100px; margin-top: 35px;">
-  <h5 class="card-header">Total Amount : Rs. {{total}}</h5>
-  <div class="card-body">
-    <h5 class="card-title">Payment Method</h5>
-    
-    <input class="form-check-input" type="radio" name="payment-method" value="COD" id="flexRadioDefault2" checked>
-    <p class="card-text">COD</p>
-    <input class="form-check-input" type="radio" name="payment-method" value="ONLINE" id="flexRadioDefault2" checked>
-    <p class="card-text">Online payment</p>
+    <div class="card col-md-4" style="width: 375px; float:left; padding: 10px; margin-left: 100px; margin-top: 35px;">
+      <h5 class="card-header">Total Amount : Rs. {{total}}</h5>
+      <div class="card-body">
+        <h5 class="card-title">Payment Method</h5>
 
-    <button class="btn btn-primary float-right" type="submit"> Checkout</button>
-  </div>
-</div>
-</form>
+        <input class="form-check-input" type="radio" name="payment-method" value="COD" id="flexRadioDefault2" checked>
+        <p class="card-text">COD</p>
+        <input class="form-check-input" type="radio" name="payment-method" value="ONLINE" id="flexRadioDefault2"
+          checked>
+        <p class="card-text">Online payment</p>
+
+        <button class="btn btn-primary float-right" type="submit"> Checkout</button>
+      </div>
+    </div>
+  </form>
 </section>
 
 <script>
-  $("#checkout-form").submit((e)=>{
+  $("#checkout-form").submit((e) => {
     e.preventDefault()
     $.ajax({
-      url:'place-order',
-      method:'post',
-      data:$('#checkout-form').serialize(),
-      success:(response)=>{
+      url: 'place-order',
+      method: 'post',
+      data: $('#checkout-form').serialize(),
+      success: (response) => {
         alert(response)
-        if(response.status){
-          location.href="/order-success"
+        if (response.codSuccess) {
+          location.href = "/order-success"
+        } else {
+          razorpayPayment(response)
         }
       }
     })
   })
+
+  function razorpayPayment(order) {
+    var options = {
+      "key": "rzp_test_ZBOP6XmkhMj0V2", // Enter the Key ID generated from the Dashboard
+      "amount": order.amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+      "currency": "INR",
+      "name": "Demo Demo",
+      "description": "Test Transaction",
+      "image": "https://example.com/your_logo",
+      "order_id": order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+      "handler": function (response) {
+        alert(response.razorpay_payment_id);
+        alert(response.razorpay_order_id);
+        alert(response.razorpay_signature)
+
+        verifyPayment(response,order)
+      },
+      "prefill": {
+        "name": "Gaurav Kumar",
+        "email": "gaurav.kumar@example.com",
+        "contact": "9999999999"
+      },
+      "notes": {
+        "address": "Razorpay Corporate Office"
+      },
+      "theme": {
+        "color": "#3399cc"
+      }
+    };
+    var rzp1 = new Razorpay(options);
+    rzp1.open();
+  }
+  function verifyPayment(payment,prder){
+    $.ajax({
+      url:'/verify-payment',
+      data:{
+        payment,
+        order
+      },
+      method:'post'
+    })
+  }
 </script>

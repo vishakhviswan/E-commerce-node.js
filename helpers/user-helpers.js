@@ -3,6 +3,11 @@ var collection = require('../config/collections')
 const bcrypt = require('bcrypt')
 var objectId = require('mongodb').ObjectID
 const { response } = require('express')
+const Razorpay = require('razorpay')
+var instance = new Razorpay({
+    key_id: 'rzp_test_ZBOP6XmkhMj0V2',
+    key_secret: 'n3rFLOnVvlmGRFeG50K6Zs39',
+});
 module.exports = {
     doSignup: (userData) => {
         return new Promise(async (resolve, reject) => {
@@ -216,7 +221,7 @@ module.exports = {
 
             ])
                 .toArray()
-           // console.log(total);
+            // console.log(total);
             resolve(total[0].total)
         })
     },
@@ -240,7 +245,8 @@ module.exports = {
 
             db.get().collection(collection.ORDER_COLLECTION).insertOne(orderObj).then((response) => {
                 db.get().collection(collection.CART_COLLECTION).removeOne({ user: objectId(order.userId) })
-                resolve()
+                console.log(response.ops[0]._id);
+                resolve(response.ops[0]._id)
             })
         })
     },
@@ -255,13 +261,13 @@ module.exports = {
     getOrders: (userId) => {
         return new Promise(async (resolve, reject) => {
             let orderItems = await db.get().collection(collection.ORDER_COLLECTION)
-            .find({userId:objectId(userId)}).toArray()
+                .find({ userId: objectId(userId) }).toArray()
             resolve(orderItems)
-         })
+        })
 
     },
-    getOrderProducts: (orderId)=>{
-        return new Promise(async (resolve, reject)=>{
+    getOrderProducts: (orderId) => {
+        return new Promise(async (resolve, reject) => {
             let orderItems = await db.get().collection(collection.ORDER_COLLECTION).aggregate([
                 {
                     $match: { _id: objectId(orderId) }
@@ -290,11 +296,84 @@ module.exports = {
                 },
 
             ]).toArray()
-            console.log(orderItems)
+            //console.log(orderItems)
             resolve(orderItems)
         })
+    },
+    generateRazorpay: (orderId, total) => {
+        return new Promise((resolve, reject) => {
+            var options = {
+                amount: parseInt(total),  // amount in the smallest currency unit
+                currency: "INR",
+                receipt: ""+orderId
+            };
+            instance.orders.create(options, function (err, order) {
+                if (err) {
+                    console.log(err);
+                } else {
+                    console.log("New Order :", order);
+                    resolve(order)
+                }
+            });
+        })
     }
+
 }
+    // getTotalOrderAmt: (userId) => {
+
+    //     return new Promise(async (resolve, reject) => {
+
+    //         let total = await db.get().collection(collection.ORDER_COLLECTION).aggregate([
+                // {
+                //     $match: { user: objectId(userId) }
+                // },
+                // {
+                //     $unwind: '$products'
+                // },
+                // {
+                //     $project: {
+                //         item: '$products.item',
+                //         quantity: '$products.quantity'
+                //     }
+                // },
+                // {
+                //     $lookup: {
+                //         from: collection.PRODUCT_COLLECTION,
+                //         localField: 'item',
+                //         foreignField: '_id',
+                //         as: 'product'
+                //     }
+                // },
+                // {
+                //     $project: {
+                //         item: 1, quantity: 1, product: { $arrayElemAt: ['$product', 0] },
+
+
+                //     }
+                // },
+                // {
+                //     $addFields: {
+                //         convertedPrice: { $toDecimal: "$product.Price" },
+
+                //     }
+
+                // },
+                // {
+                //     $group: {
+
+                //         _id: null,
+                //         total: { $sum: { $multiply: ["$quantity", "$convertedPrice"] } }
+
+                //     }
+                // }
+
+    //         ])
+    //             .toArray()
+    //         console.log(total.totalAmount);
+    //         resolve(total[0].total)
+    //     })
+    // }
+
 
 
 
