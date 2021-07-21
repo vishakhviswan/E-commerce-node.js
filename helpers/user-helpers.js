@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt')
 var objectId = require('mongodb').ObjectID
 const { response } = require('express')
 const Razorpay = require('razorpay')
+const { resolve } = require('path')
 var instance = new Razorpay({
     key_id: 'rzp_test_ZBOP6XmkhMj0V2',
     key_secret: 'n3rFLOnVvlmGRFeG50K6Zs39',
@@ -301,11 +302,12 @@ module.exports = {
         })
     },
     generateRazorpay: (orderId, total) => {
+        console.log(orderId);
         return new Promise((resolve, reject) => {
             var options = {
-                amount: parseInt(total),  // amount in the smallest currency unit
+                amount: parseInt(total)*100,  // amount in the smallest currency unit
                 currency: "INR",
-                receipt: ""+orderId
+                receipt: "" + orderId
             };
             instance.orders.create(options, function (err, order) {
                 if (err) {
@@ -316,64 +318,37 @@ module.exports = {
                 }
             });
         })
+    },
+    verifyPayment:(details)=>{
+        return new Promise((resolve,reject)=>{
+            const crypto =require('crypto');
+            let hmac = crypto.createHmac('sha256','n3rFLOnVvlmGRFeG50K6Zs39')
+            hmac.update(details['payment[razorpay_order_id]']+'|'+details['payment[razorpay_payment_id]']); 
+            hmac=hmac.digest('hex')
+            if(hmac==details['payment[razorpay_signature]']){  
+                resolve()
+            }else{
+                reject()
+            }
+        })
+    },
+    changePaymentStatus:(orderId)=>{
+        return new Promise((resolve,reject)=>{
+            db.get().collection(collection.ORDER_COLLECTION)
+            .updateOne({_id:objectId(orderId)},
+            {
+                $set:{
+                    status:'placed'
+                }
+            }
+            ).then(()=>{
+                resolve()
+            })
+        })
     }
 
 }
-    // getTotalOrderAmt: (userId) => {
-
-    //     return new Promise(async (resolve, reject) => {
-
-    //         let total = await db.get().collection(collection.ORDER_COLLECTION).aggregate([
-                // {
-                //     $match: { user: objectId(userId) }
-                // },
-                // {
-                //     $unwind: '$products'
-                // },
-                // {
-                //     $project: {
-                //         item: '$products.item',
-                //         quantity: '$products.quantity'
-                //     }
-                // },
-                // {
-                //     $lookup: {
-                //         from: collection.PRODUCT_COLLECTION,
-                //         localField: 'item',
-                //         foreignField: '_id',
-                //         as: 'product'
-                //     }
-                // },
-                // {
-                //     $project: {
-                //         item: 1, quantity: 1, product: { $arrayElemAt: ['$product', 0] },
-
-
-                //     }
-                // },
-                // {
-                //     $addFields: {
-                //         convertedPrice: { $toDecimal: "$product.Price" },
-
-                //     }
-
-                // },
-                // {
-                //     $group: {
-
-                //         _id: null,
-                //         total: { $sum: { $multiply: ["$quantity", "$convertedPrice"] } }
-
-                //     }
-                // }
-
-    //         ])
-    //             .toArray()
-    //         console.log(total.totalAmount);
-    //         resolve(total[0].total)
-    //     })
-    // }
-
+    
 
 
 
