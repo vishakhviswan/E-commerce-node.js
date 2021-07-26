@@ -7,8 +7,8 @@ const Razorpay = require('razorpay')
 const { resolve } = require('path')
 const { type } = require('os')
 var instance = new Razorpay({
-    key_id: 'rzp_test_ZBOP6XmkhMj0V2',
-    key_secret: 'n3rFLOnVvlmGRFeG50K6Zs39',
+    key_id: '',
+    key_secret: '',
 });
 module.exports = {
     doSignup: (userData) => {
