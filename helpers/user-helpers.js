@@ -5,6 +5,7 @@ var objectId = require('mongodb').ObjectID
 const { response } = require('express')
 const Razorpay = require('razorpay')
 const { resolve } = require('path')
+const { type } = require('os')
 var instance = new Razorpay({
     key_id: 'rzp_test_ZBOP6XmkhMj0V2',
     key_secret: 'n3rFLOnVvlmGRFeG50K6Zs39',
@@ -297,7 +298,7 @@ module.exports = {
                 },
 
             ]).toArray()
-            //console.log(orderItems)
+            console.log(orderItems)
             resolve(orderItems)
         })
     },
@@ -305,7 +306,7 @@ module.exports = {
         console.log(orderId);
         return new Promise((resolve, reject) => {
             var options = {
-                amount: parseInt(total)*100,  // amount in the smallest currency unit
+                amount: parseInt(total) * 100,  // amount in the smallest currency unit
                 currency: "INR",
                 receipt: "" + orderId
             };
@@ -319,36 +320,77 @@ module.exports = {
             });
         })
     },
-    verifyPayment:(details)=>{
-        return new Promise((resolve,reject)=>{
-            const crypto =require('crypto');
-            let hmac = crypto.createHmac('sha256','n3rFLOnVvlmGRFeG50K6Zs39')
-            hmac.update(details['payment[razorpay_order_id]']+'|'+details['payment[razorpay_payment_id]']); 
-            hmac=hmac.digest('hex')
-            if(hmac==details['payment[razorpay_signature]']){  
+    verifyPayment: (details) => {
+        return new Promise((resolve, reject) => {
+            const crypto = require('crypto');
+            let hmac = crypto.createHmac('sha256', 'n3rFLOnVvlmGRFeG50K6Zs39')
+            hmac.update(details['payment[razorpay_order_id]'] + '|' + details['payment[razorpay_payment_id]']);
+            hmac = hmac.digest('hex')
+            if (hmac == details['payment[razorpay_signature]']) {
                 resolve()
-            }else{
+            } else {
                 reject()
             }
         })
     },
-    changePaymentStatus:(orderId)=>{
-        return new Promise((resolve,reject)=>{
+    changePaymentStatus: (orderId) => {
+        return new Promise((resolve, reject) => {
             db.get().collection(collection.ORDER_COLLECTION)
-            .updateOne({_id:objectId(orderId)},
-            {
-                $set:{
-                    status:'placed'
+                .updateOne({ _id: objectId(orderId) },
+                    {
+                        $set: {
+                            status: 'placed'
+                        }
+                    }
+                ).then(() => {
+                    resolve()
+                })
+        })
+    },
+    getViewProducts: (proId) => {
+        return new Promise(async (resolve, reject) => {
+            let product = await db.get().collection(collection.PRODUCT_COLLECTION)
+                .find({ _id: objectId(proId) }).toArray()
+            //console.log(product);
+            resolve(product[0])
+        })
+
+    },
+    getUser: (userId) => {
+        // console.log(userId);
+        return new Promise(async (resolve, reject) => {
+            let user = await db.get().collection(collection.USER_COLLECTION)
+                .find({ _id: objectId(userId) }).toArray()
+            resolve(user[0]);
+        })
+
+    },
+    doCreatePro: (userData, userId) => {
+        console.log("user::" + userId);
+        console.log(userData);
+        return new Promise(async (resolve, reject) => {
+            db.get().collection(collection.USER_COLLECTION).updateOne({ _id: objectId(userId) },
+                {
+                    $set: {
+                        alt_email: userData.alt_email,
+                        mobile: userData.mobile,
+                        addresstype: userData.addresstype,
+                        address1: userData.address1,
+                        address2: userData.address2,
+                        city: userData.city,
+                        region: userData.region,
+                        postalcode: userData.postalcode,
+                        country: userData.country
+                    }
                 }
-            }
-            ).then(()=>{
+            ).then(() => {
                 resolve()
             })
+
         })
     }
-
 }
-    
+
 
 
 

@@ -4,12 +4,12 @@
 
       <h2>Enter Delivery Details </h2>
 
-      <label for="">Address</label><br>
-      <input type="text" name="address" class="form-control"><br>
+      <label for="" >Address</label><br>
+      <input type="text" name="address" class="form-control" value="{{user.address1}} / {{user.address2}} / {{user.city}} / {{user.region}} / {{user.country}}"><br>
       <label for="">Pincode</label><br>
-      <input type="number" name="pincode" class="form-control"><br>
+      <input type="number" name="pincode" class="form-control" value="{{user.postalcode}}"><br>
       <label for="">Mobile</label><br>
-      <input type="mobile" name="mobile" class="form-control"><br>
+      <input type="mobile" name="mobile" class="form-control" value="{{user.mobile}}"><br>
       <input type="text" name="userId" id="" value="{{user._id}}" hidden>
 
     </div>

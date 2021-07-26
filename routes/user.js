@@ -66,8 +66,11 @@ router.get('/cart', verifyLogin, async (req, res) => {
   cartCount = await userHelpers.getCartCount(req.session.user._id)
   let products = await userHelpers.getCartProducts(req.session.user._id)
   let totalValue = await userHelpers.getTotalAmount(req.session.user._id)
-  //console.log('***'+req.session.user._id);
+  // console.log('***'+products);
+  
   res.render('user/cart', { products, totalValue, user: req.session.user, cartCount })
+
+
 });
 
 router.get('/add-to-cart/:id', (req, res) => {
@@ -90,10 +93,11 @@ router.post('/remove-product', (req, res, next) => {
 })
 
 router.get('/place-order', verifyLogin, async (req, res) => {
+  let user = await userHelpers.getUser(req.session.user._id)
   cartCount = await userHelpers.getCartCount(req.session.user._id)
   let total = await userHelpers.getTotalAmount(req.session.user._id)
 
-  res.render('user/place-order', { total, user: req.session.user, cartCount })
+  res.render('user/place-order', { total, user: req.session.user, cartCount, user })
 });
 router.post('/place-order', async (req, res) => {
   let products = await userHelpers.getCartProductList(req.body.userId)
@@ -141,6 +145,32 @@ router.post('/verify-payment', (req, res) => {
   })
 })
 
+router.get('/product-details/:id', async(req, res) => {
+  let product = await userHelpers.getViewProducts(req.params.id)
+  res.render('user/product-details', { user: req.session.user,product })
+  
+});
+
+router.get('/user-profile',verifyLogin,async(req, res) => {
+  let user = await userHelpers.getUser(req.session.user._id)
+  res.render('user/user-profile', { user: req.session.user,user })
+  
+});
+router.get('/create-profile',verifyLogin,async(req, res) => {
+ // let user = await userHelpers.getUser(req.session.user._id)
+  res.render('user/create-profile', { user: req.session.user})
+  
+});
+
+router.post('/create-profile', (req, res) => {
+  userHelpers.doCreatePro(req.body,req.session.user._id).then(()=>{
+    res.redirect('/user-profile')
+    // if(req.files.Image){
+    //          let image=req.files.Image
+    //          image.mv('./public/product-images/' + id + ".jpg")
+  })
+  
+})
 
 module.exports = router;
 
