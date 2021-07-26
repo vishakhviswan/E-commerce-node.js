@@ -1,0 +1,35 @@
+<section>
+    <div class="container">
+        
+        <table class="table mt-5">
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Address</th>
+                    <th scope="col">Pincode</th>
+                    <th scope="col">Mobile</th>
+                    <th scope="col">Email</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each users}}
+                <tr>
+                    <td>{{this.username}}</td>
+                    <td>{{this.addresstype}}:{{this.address1}}/{{this.address2}}/{{this.city}} / {{this.region}} / {{this.country}}</td>
+                    <td>{{this.postalcode}}</td>
+                    <td>{{this.mobile}}</td> 
+                    <td>{{this.Email}} / {{this.alt_email}}</td>  
+                    <td>
+                         <a href="#" class="btn btn-primary">View More Details</a> {{!-- /view-order-products/{{this._id}} --}}
+                        {{!-- <button onclick="/view-order-products/('{{this._id}}')" class="btn btn-primary">View
+                            Products</button> --}}
+                        {{!-- Metod 1 (id passing)--}}
+                        {{!-- <a href="/admin/delete-product?id={{this._id}}" class="btn btn-danger">Delete</a> --}}
+
+                    </td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+</section>

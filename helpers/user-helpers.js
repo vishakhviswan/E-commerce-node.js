@@ -229,7 +229,7 @@ module.exports = {
     },
     placeOrder: (order, products, total) => {
         return new Promise((resolve, reject) => {
-            console.log(total);
+            console.log(total+"order"+order+"products"+products);
             let status = order['payment-method'] === 'COD' ? 'placed' : 'pending'
             let orderObj = {
                 deliveryDetails: {
@@ -265,6 +265,7 @@ module.exports = {
             let orderItems = await db.get().collection(collection.ORDER_COLLECTION)
                 .find({ userId: objectId(userId) }).toArray()
             resolve(orderItems)
+            // console.log("abcdd"+orderItems);
         })
 
     },

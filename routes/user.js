@@ -119,6 +119,7 @@ router.post('/place-order', async (req, res) => {
 router.get('/orders', verifyLogin, async (req, res) => {
   let orderDetails = await userHelpers.getOrders(req.session.user._id)
   res.render('user/orders', { orderDetails, user: req.session.user })
+  // console.log(orderDetails);
 });
 
 router.get('/order-success', (req, res) => {
@@ -153,12 +154,14 @@ router.get('/product-details/:id', async(req, res) => {
 
 router.get('/user-profile',verifyLogin,async(req, res) => {
   let user = await userHelpers.getUser(req.session.user._id)
-  res.render('user/user-profile', { user: req.session.user,user })
+  cartCount = await userHelpers.getCartCount(req.session.user._id)
+  res.render('user/user-profile', { user: req.session.user,user,cartCount })
   
 });
 router.get('/create-profile',verifyLogin,async(req, res) => {
+  cartCount = await userHelpers.getCartCount(req.session.user._id)
  // let user = await userHelpers.getUser(req.session.user._id)
-  res.render('user/create-profile', { user: req.session.user})
+  res.render('user/create-profile', { user: req.session.user,cartCount})
   
 });
 

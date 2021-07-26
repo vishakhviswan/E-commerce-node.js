@@ -2,7 +2,7 @@ var express = require('express');
 const productHelpers = require('../helpers/product-helpers');
 var router = express.Router();
 var productHelper = require('../helpers/product-helpers')
-const adminHelprs = require('../helpers/admin-helpers')
+const adminHelpers = require('../helpers/admin-helpers')
 
 /* GET users listing. */
 router.get('/', function (req, res, next) {
@@ -59,25 +59,17 @@ router.get('/edit-product/:id',async (req,res)=>{
     })
   })
 
-  router.get('/adminLogin', (req, res) => {
-    // if (req.session.admin) {
-    //   res.redirect('/admin')
-    // } else {
-      res.render("admin/admin-login") // , { "loginErr": req.session.adminLoginErr }
-    //   req.session.adminLoginErr = false
-    // }
-  });
-  // router.post('/admin-login', (req, res) => {
-  //   adminHelpers.doLogin(req.body).then((response) => {
-  //     if (response.status) {
-  
-  //       req.session.admin = response.admin
-  //       req.session.admin.loggedIn = true
-  //       res.redirect('/admin')
-  //     } else {
-  //       req.session.userLoginErr = true
-  //       res.redirect('admin/admin-login')
-  //     }
-  //   })
-  // })
+  router.get('/orders',async(req,res)=>{
+    let allOrders = await adminHelpers.getAllOrders()
+    res.render("admin/all-orders",{allOrders,adminHeader:true})
+    
+   
+  })
+
+  router.get('/users',async(req,res)=>{
+    let users = await adminHelpers.getAllUsers([])
+    res.render("admin/all-users",{users,adminHeader:true})
+  })
+
+
 module.exports = router;
